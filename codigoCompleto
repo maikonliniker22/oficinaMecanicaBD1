@@ -1,0 +1,230 @@
+CREATE TABLE clientes(
+  id_cliente SERIAL PRIMARY KEY,
+  nome VARCHAR(50),
+  tell VARCHAR(20),
+  endereco VARCHAR(60)
+  );
+INSERT INTO clientes (nome, telL, endereco)
+VALUES
+('Carlos Eduardo Silva', '(47)98921-1001', 'Rua Dom Pedro II, 120 - Centro, Itajaí - SC'),
+('Mariana Souza Oliveira','(47)943951-1452', 'Avenida Nereu Ramos, 450 - Centro, Navegantes - SC'),
+('João Henrique Martins','(47)99991-1333', 'Rua Blumenau, 88 - Centro, Brusque - SC'),
+('Fernanda Lima Costa','(47)99911-1004', 'Rua 2480, 300 - Centro, Balneário Camboriú - SC'),
+('Ricardo Alves Pereira', '(47)99911-1405', 'Avenida Santa Catarina, 2100 - Estados, Camboriú - SC'),
+('Patricia Gomes Rocha', '(47)99911-1106', 'Rua José Francisco Vitor, 760 - Centro, Penha - SC'),
+('Lucas Fernandes Ribeiro','(47)96911-1057', 'Rua Coronel Procópio Gomes, 540 - Bucarein, Joinville - SC'),
+('Amanda Cristina Melo','(47)99911-1038', 'Avenida Brasil, 980 - Centro, Itapema - SC'),
+('Bruno Carvalho Santos','(47)99211-1509', 'Rua Tijucas, 410 - Centro, Tijucas - SC'),
+('Juliana Pereira Lima','(47)91911-1410', 'Rua Hercílio Luz, 150 - Centro, Porto Belo - SC');
+
+
+CREATE TABLE funcionarios (
+    id_funcionario SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cargo VARCHAR(50),
+    salario DECIMAL(10,2)
+);
+INSERT INTO funcionarios (nome, cargo, salario)
+VALUES
+('João Mecânico', 'Mecânico', 3500.00),
+('Marcelo Silva', 'Ajudante', 2000.00),
+('Pedro Silva', 'Eletricista', 4200.00);
+
+
+CREATE TABLE veiculos(
+  id_veiculo SERIAL PRIMARY KEY,
+  id_cliente INT,
+  marca VARCHAR(50),
+  modelo VARCHAR(50),
+  placa VARCHAR(10) UNIQUE,
+  ano INT,
+  cor VARCHAR(30),
+  FOREIGN KEY (id_cliente) 
+  REFERENCES clientes(id_cliente)
+  );
+INSERT INTO veiculos (id_cliente, marca, modelo, ano, placa, cor)
+VALUES
+(1, 'Fiat', 'Uno', 2018, 'QWE1A11', 'Prata'),
+(2, 'Fiat', 'Argo', 2022, 'RTY2B22', 'Branco'),
+(3, 'Honda', 'Civic', 2021, 'UIO3C33', 'Preto'),
+(4, 'Honda', 'City', 2020, 'PAS4D44', 'Cinza'),
+(5, 'Honda', 'HR-V', 2023, 'DFG5E55', 'Branco'),
+(6, 'Chevrolet', 'Onix', 2021, 'GHJ6F66', 'Azul'),
+(7, 'Toyota', 'Corolla', 2022, 'JKL7G77', 'Prata'),
+(8, 'Volkswagen', 'Gol', 2019, 'ZXC8H88', 'Vermelho'),
+(9, 'Hyundai', 'HB20', 2020, 'VBN9I99', 'Preto'),
+(10, 'Jeep', 'Compass', 2024, 'MKO0J10', 'Cinza');
+
+
+CREATE TABLE servicos (
+    id_servico SERIAL PRIMARY KEY,
+    descricao VARCHAR(100),
+    valor DECIMAL(10,2)
+);
+INSERT INTO servicos (descricao, valor)
+VALUES 
+('Troca de óleo', 150.00),
+('Alinhamento', 120.00),
+('Troca de freio', 300.00),
+('Balanceamento', 80.00),
+('Troca de pneus', 250.00),
+('Revisão completa', 650.00),
+('Troca de bateria', 450.00),
+('Higienização do ar-condicionado', 180.00),
+('Troca de amortecedores', 900.00);
+
+
+CREATE TABLE ordens_servico (
+    id_os SERIAL PRIMARY KEY,
+    id_veiculo INT,
+    id_cliente INT,
+    id_funcionario INT,
+    data_entrada DATE,
+    data_saida DATE,
+    status_os VARCHAR(30),
+    valor_total DECIMAL(10,2),
+      FOREIGN KEY (id_cliente)
+    REFERENCES clientes(id_cliente),
+    FOREIGN KEY (id_veiculo) 
+  REFERENCES veiculos(id_veiculo),
+    FOREIGN KEY (id_funcionario) 
+  REFERENCES funcionarios(id_funcionario)
+);
+INSERT INTO ordens_servico
+(id_cliente,id_veiculo, id_funcionario, data_entrada, data_saida, status_os, valor_total)
+VALUES
+(1, 1, 1, '2026-05-10', '2026-05-11', 'Concluída', 150.00),
+(2, 2, 2, '2026-05-12', '2026-05-13', 'Concluída', 200.00),
+(3, 3, 1, '2026-05-14', NULL, 'Em andamento', 300.00),
+(4, 4, 2, '2026-05-15', '2026-05-16', 'Concluída', 650.00),
+(5, 5, 1, '2026-05-16', NULL, 'Em andamento', 450.00),
+(6, 6, 2, '2026-05-17', '2026-05-18', 'Concluída', 180.00),
+(7, 7, 1, '2026-05-18', NULL, 'Aguardando peças', 900.00),
+(8, 8, 2, '2026-05-19', '2026-05-20', 'Concluída', 120.00),
+(9, 9, 1, '2026-05-20', NULL, 'Em andamento', 330.00),
+(10, 10, 2, '2026-05-21', '2026-05-22', 'Concluída', 730.00);
+
+
+--Listando clientes--
+SELECT * FROM clientes;
+
+
+--Listando veiculos--
+SELECT * FROM veiculos;
+
+
+--Listando Serviços disponiveis e seus valores--
+SELECT * FROM servicos;
+
+
+--Valor dos serviços concluidos e em andamento--
+SELECT status_os, SUM(valor_total)
+FROM ordens_servico
+GROUP BY status_os;
+
+
+SELECT * 
+FROM servicos
+WHERE valor > 200;
+
+
+--Serviço do mais caro ao mais barato--
+SELECT *
+FROM servicos
+ORDER BY valor DESC;
+
+
+--Serviço mais caro--
+SELECT *
+FROM servicos
+ORDER BY valor DESC 
+LIMIT 1;
+
+
+--Serviços concluidos--
+SELECT
+    os.id_os,
+    c.nome AS cliente,
+    v.modelo,
+    v.placa,
+    os.status_os,
+    os.valor_total
+FROM ordens_servico os
+JOIN clientes c
+ON os.id_cliente = c.id_cliente
+JOIN veiculos v
+ON os.id_veiculo = v.id_veiculo
+WHERE status_os = 'Concluída';
+
+
+--Serviços em andamento--
+SELECT
+    os.id_os,
+    c.nome AS cliente,
+    v.modelo,
+    v.placa,
+    os.status_os,
+    os.valor_total
+FROM ordens_servico os
+JOIN clientes c
+ON os.id_cliente = c.id_cliente
+JOIN veiculos v
+ON os.id_veiculo = v.id_veiculo
+WHERE status_os = 'Em andamento';
+
+
+--Serviços Aguardando peças--
+--Serviços concluidos--
+SELECT
+    os.id_os,
+    c.nome AS cliente,
+    v.modelo,
+    v.placa,
+    os.status_os,
+    os.valor_total
+FROM ordens_servico os
+JOIN clientes c
+ON os.id_cliente = c.id_cliente
+JOIN veiculos v
+ON os.id_veiculo = v.id_veiculo
+WHERE status_os = 'Aguardando peças';
+
+
+--Listando Funcionarios-- 
+SELECT * FROM funcionarios;
+  
+
+--Maior ao menor salario entre os funcionarios--
+SELECT * 
+  FROM funcionarios
+ORDER BY SALARIO DESC;
+
+
+--Listando veiculos--
+SELECT * FROM veiculos;
+
+
+--Clientes,veiculo,Status e Valor gasto--
+SELECT
+    os.id_os,
+    c.nome AS cliente,
+    v.modelo,
+    v.placa,
+    os.status_os,
+    os.valor_total
+FROM ordens_servico os
+JOIN clientes c
+ON os.id_cliente = c.id_cliente
+JOIN veiculos v
+ON os.id_veiculo = v.id_veiculo;
+
+
+-- Donos e seus veiculos--
+SELECT
+    c.nome,
+    v.marca,
+    v.modelo,
+    v.placa
+FROM clientes c
+INNER JOIN veiculos v
+ON c.id_cliente = v.id_cliente;
